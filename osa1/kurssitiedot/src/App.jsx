@@ -1,20 +1,20 @@
 
 const Header = (props) => {
-  console.log(props)
-  return (
-      <h1>
-        {props.otsikko.name}
-      </h1>
-  )
+    console.log(props)
+    return (
+        <h1>
+            {props.otsikko.name}
+        </h1>
+    )
 }
 
 const Part = (props) => {
     console.log(props)
-        return (
-            <p>
-                Osio: {props.osio.name} - tehtavia: {props.osio.exercises}
-            </p>
-        )
+    return (
+        <p>
+            Osio: {props.osio.name} - tehtavia: {props.osio.exercises}
+        </p>
+    )
 }
 
 const Content = (props) => {
@@ -57,12 +57,12 @@ const App = () => {
     }
 
     return (
-      <div>
-        <Header otsikko={course} />
-          <Content osiot={course} />
-          <Total totaali={course} />
-      </div>
-  )
+        <div>
+            <Header otsikko={course} />
+            <Content osiot={course} />
+            <Total totaali={course} />
+        </div>
+    )
 }
 
 export default App
