@@ -53,13 +53,13 @@ const Numbers = ({persons, filter, del}) => {
   console.log({persons})
   const filtered =
       persons.filter(person =>
-          (person.name.toLowerCase().indexOf(filter.toLowerCase()) > -1) || (person.number.indexOf(filter) > -1)
+          (person.name.toLowerCase().indexOf(filter.toLowerCase()) > -1) || (person.phone.indexOf(filter) > -1)
       )
 
   return(
       filtered.map(person =>
           <p key={person.name}>
-              {person.name} {person.number} <button onClick={() => del(person.id, person.name)}>delete</button></p>
+              {person.name} {person.phone} <button onClick={() => del(person.id, person.name)}>delete</button></p>
       )
   )
 }
@@ -118,7 +118,7 @@ const App = () => {
 
         const nameObject = {
           name: newName,
-          number: phone
+          phone: phone
         }
 
         const found = (person) =>  person.name.toLowerCase() === newName.toLowerCase()
