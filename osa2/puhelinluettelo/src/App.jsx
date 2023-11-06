@@ -11,7 +11,7 @@ const AddName = ({newName, phone, handleNewPersonChange, handlePhoneChange, addN
             onChange={handleNewPersonChange} />
         </div>
         <div>
-          number: <input
+          phone: <input
             value={phone}
             onChange={handlePhoneChange}/>
         </div>
@@ -53,7 +53,7 @@ const Numbers = ({persons, filter, del}) => {
   console.log({persons})
   const filtered =
       persons.filter(person =>
-          (person.name.toLowerCase().indexOf(filter.toLowerCase()) > -1) || (person.phone.indexOf(filter) > -1)
+          (person.name.toLowerCase().indexOf(filter.toLowerCase()) > -1) || (String(person.phone).indexOf(filter) > -1)
       )
 
   return(

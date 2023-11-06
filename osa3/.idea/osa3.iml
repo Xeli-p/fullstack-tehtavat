@@ -9,5 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="puhelinluettelo" />
+    <orderEntry type="module" module-name="osa2" />
   </component>
 </module>
