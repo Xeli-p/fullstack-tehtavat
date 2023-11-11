@@ -28,7 +28,7 @@ const Notification = ({ message }) => {
     }
 
 
-    const isError = message.toLowerCase().includes('already');
+    const isError = message.toLowerCase().includes('error') || message.toLowerCase().includes('fail');
     console.log({message})
     return (
         <div className={isError ? 'error-red' : 'error'} >
@@ -72,26 +72,35 @@ const App = () => {
     const [filter, setFilter] = useState('')
     const [errorMessage, setErrorMessage] = useState(null)
 
+    const fetchAll = () => {
+        nameService
+            .getAll()
+            .then(response => {
+                console.log('promise fulfilled', response)
+                setPersons(response.data);
+            })
+            .catch(error => {
+                setErrorMessage('Failed to fetch data from the server');
+            });
+    }
+
     useEffect(() => {
         console.log('effect')
-            nameService
-                .getAll()
-                .then(response => {
-                console.log('promise fulfilled', response)
-                setPersons(response.data)
-            })
-                .catch(error => {
-                    console.log('fail')
-                })
+        fetchAll();
     },[])
+
+    const updateData = () => {
+        fetchAll();
+    };
 
     const delName = (id, name) => {
         if(window.confirm(`sure you want to delete ${id} ${name}?`)){
+            console.log(`id in delete : ${id}`)
             nameService
                 .del(id)
                 .then(response => {
                     console.log(response.data)
-                    setPersons(persons.filter(person => person.id !== id))
+                    fetchAll()
                     setErrorMessage(
                         `Deleted ${name}`
                     )
@@ -101,7 +110,7 @@ const App = () => {
                 })
                 .catch(error => {
                     setErrorMessage(
-                        `Information of ${name} has already been removed from the server`
+                        `Information of ${name} has already been removed from the server or ${error}`
                     )
                     setTimeout(() => {
                         setErrorMessage(null)
@@ -133,6 +142,7 @@ const App = () => {
                     .update(persons[persons.findIndex(found)].id, nameObject)
                     .then(response => {
                         setPersons(persons.filter((person) => person.name.toLowerCase() !== newName.toLowerCase()).concat(response.data))
+                        updateData();
                         setErrorMessage(
                             `Added ${nameObject.name}`
                         )
@@ -141,7 +151,13 @@ const App = () => {
                         }, 5000)
                     })
                     .catch(error => {
-                        console.log('fail')
+                        console.log(error.response.data)
+                        setErrorMessage(
+                            error.message
+                        )
+                        setTimeout(() => {
+                            setErrorMessage(null)
+                        }, 5000)
                     })
             }
         }
@@ -155,12 +171,19 @@ const App = () => {
                     setErrorMessage(
                         `Added ${nameObject.name}`
                     )
+                    updateData();
                     setTimeout(() => {
                         setErrorMessage(null)
                     }, 5000)
                 })
                 .catch(error => {
-                    console.log('fail')
+                    console.log(error)
+                    setErrorMessage(
+                        error.message
+                    )
+                    setTimeout(() => {
+                        setErrorMessage(null)
+                    }, 5000)
                 })
           /* setPersons(persons.concat(nameObject)) */
         }
@@ -183,6 +206,10 @@ const App = () => {
     setFilter(event.target.value)
     }
 
+    const handleDelete = (event) => {
+        console.log(event.target.value())
+        delName(event.target.value)
+    }
 
 
   return (
