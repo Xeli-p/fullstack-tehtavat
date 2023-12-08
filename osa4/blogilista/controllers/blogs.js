@@ -42,7 +42,7 @@ blogRouter.delete('/:id', async (request, response) => {
     response.status(204).end()
 })
 
-blogRouter.put('/:id', async (request, response, next) => {
+blogRouter.put('/:id', async (request, response) => {
     const body = request.body;
     const update = await blogNote.findByIdAndUpdate(request.params.id, body);
 
