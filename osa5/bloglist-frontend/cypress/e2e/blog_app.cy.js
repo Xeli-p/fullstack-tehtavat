@@ -157,6 +157,7 @@ describe('Blog app',  function() {
     }).then(response => {
       localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
       const token = JSON.parse(localStorage.getItem('loggedBlogappUser')).token;
+      
       cy.request({
         method: 'POST',
         url: 'http://localhost:3003/api/blogs',
