@@ -1,8 +1,5 @@
 const blogRouter = require('express').Router()
 const blogNote = require('../models/blogNote')
-const User = require('../models/user')
-const mongoose = require("mongoose");
-const jwt = require('jsonwebtoken')
 
 
 blogRouter.get('/', async (request, response) => {
@@ -30,7 +27,6 @@ blogRouter.get('/:id', async (request, response) => {
 
 blogRouter.delete('/:id', async (request, response) => {
     const user = request.user
-    //const decodedToken = jwt.verify(request.token, process.env.SECRET)
     const blog = await blogNote.findById(request.params.id).populate('user')
     if (!blog) {
         return response.status(404).json({ error: 'Blog not found' });
@@ -57,11 +53,6 @@ blogRouter.put('/:id', async (request, response) => {
 blogRouter.post('/', async (request, response) => {
     const body = request.body
     const user = request.user
-   // const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  //  if (!user.id) {
-    //  return response.status(401).json({ error: 'userID not found' })
-   // }
-   // const user = await User.findById(decodedToken.id)
 
   if (!user) {
     return response.status(401).json({ error: 'user not found' });
@@ -79,6 +70,27 @@ blogRouter.post('/', async (request, response) => {
     user.blogs = user.blogs.concat(savedBlog.id)
     await user.save()
     response.status(201).json(savedBlog);
+});
+
+blogRouter.post('/:id/comments', async (request, response) => {
+    try {
+        const blogId = request.params.id;
+        const commentText = request.body.comment;
+
+        const blog = await blogNote.findById(blogId);
+
+        if (!blog) {
+            return response.status(404).json({ error: 'Blog not found' });
+        }
+
+        blog.comments.push( String(commentText) );
+        const updatedBlog = await blog.save();
+
+        response.status(201).json(updatedBlog);
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 module.exports = blogRouter
