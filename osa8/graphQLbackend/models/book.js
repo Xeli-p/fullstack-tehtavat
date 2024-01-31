@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+// you must install this library
 const uniqueValidator = require('mongoose-unique-validator')
 
 const schema = new mongoose.Schema({
@@ -17,7 +18,7 @@ const schema = new mongoose.Schema({
     ref: 'Author'
   },
   genres: [
-    { type: String }
+    { type: String}
   ]
 })
 

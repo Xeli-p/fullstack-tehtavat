@@ -103,6 +103,10 @@ const typeDefs = `
       name: String!
       setBornTo: Int!
     ): Author
+    addAuthor(
+      name: String!
+      born: Int
+    ): Author
   }
 
   type Author {
@@ -170,7 +174,9 @@ const resolvers = {
       */
      return Book.find({})
     },
-    allAuthors: () => authors
+    allAuthors: async(root, args) => {
+      return Author.find({})
+    }
   },
   Author: {
     name: (root) => root.name,
@@ -178,17 +184,24 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args) => {
-      // const authorExists = authors.some((author) => author.name === args.author)
-      const book = new Book({ ...args })
-   /*   if (!authorExists) {
-        const newAuthor = { name: args.author, id: uuid(), bookCount: 1 }
-        authors = authors.concat(newAuthor)
+      // Find or create the author
+      let author = await Author.findOne({ name: args.author });
+  
+      if (!author) {
+        // If the author does not exist, create a new one
+        author = new Author({ name: args.author, bookCount: 1 });
+        await author.save();
+      } else {
+        // If the author exists, increment their bookCount
+        author.bookCount += 1;
+        await author.save();
       }
-  */
-    //  const book = { ...args, id: uuid() }
-      await book.save()
-      //books = books.concat(book)
-      return book
+  
+      // Create and save the new book
+      const book = new Book({ ...args, author: author._id });
+      await book.save();
+  
+      return book;
     },
     editAuthor: async (root, args) => {
       const author = await Author.findOne({ name: args.name })
@@ -208,7 +221,11 @@ const resolvers = {
       }
       */
       return author
-    }   
+    },
+    addAuthor: async (root, args) => {
+      const author = new Author({ ...args })
+      return author.save()
+    }
 
   }
 }
