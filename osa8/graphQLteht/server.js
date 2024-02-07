@@ -5,7 +5,7 @@ const config = require('./utils/config')
 const Author = require('./models/author')
 const Book = require('./models/book')
 const User = require('./models/user')
-const { GraphQLError } = require('graphql');
+const { GraphQLError } = require('graphql')
 const jwt = require('jsonwebtoken')
 
 mongoose.set('strictQuery', false)
@@ -197,10 +197,10 @@ const resolvers = {
 
       if (!author) {
         author = new Author({ name: args.author, bookCount: 1 })
-        await author.save();
+        await author.save()
       } else {
-        author.bookCount += 1;
-        await author.save();
+        author.bookCount += 1
+        await author.save()
       }
   
       const book = new Book({ ...args, author: author._id })
