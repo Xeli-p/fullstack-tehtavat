@@ -10,9 +10,6 @@ const jwt = require('jsonwebtoken')
 
 mongoose.set('strictQuery', false)
 
-const { v1: uuid } = require('uuid')
-
-
 require('dotenv').config()
 
 
@@ -140,15 +137,15 @@ const resolvers = {
     published: (root) => root.published,
     author: async (root) => {
       if (!root.author) {
-        return null; // or handle this case accordingly
+        return null
       }
   
       try {
-        const author = await Author.findById(root.author);
-        return author;
+        const author = await Author.findById(root.author)
+        return author
       } catch (error) {
-        console.error(`Error fetching author for book ${root.title}:`, error);
-        return null; // or handle this case accordingly
+        console.error(`Error fetching author for book ${root.title}:`, error)
+        return null
       }
     },
     genres: (root) => root.genres
