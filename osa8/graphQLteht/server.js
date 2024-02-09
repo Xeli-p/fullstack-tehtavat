@@ -17,7 +17,7 @@ const typeDefs = `
 
   type User {
     username: String!
-    favoriteGenre: String!
+    favoriteGenre: String
     id: ID!
   }
 
@@ -42,6 +42,7 @@ const typeDefs = `
     ): Author
     createUser(
       username: String!
+      favoriteGenre: String
     ): User
     login(
       username: String!
@@ -91,46 +92,38 @@ const resolvers = {
     bookCount: async () => Book.collection.countDocuments(),
     authorCount: async () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-
+      console.log('Received args:', args)
+    
+      const byGenre = (book) => book.genres.includes(args.genre)
+    
       if (!args.author && !args.genre) {
-        return Book.find({})        
-      } 
-    /*  const byGenre = (book) =>
-        book.genres.includes(args.genre)
-      const byAuthor = (book) =>
-        args.author === book.author
-
-      if (!args.author && !args.genre) {
-        return books
-      } 
-      
-      if (args.author && args.genre) {
-        return books.filter(byAuthor, byGenre)
-      } 
-
-      if (args.genre) {
-      return books.filter(byGenre)
+        const allBooks = await Book.find({})
+        console.log('All books:', allBooks)
+        return allBooks
       }
-
-      if (args.author) {
-      return books.filter(byAuthor)
-      }
-      */
+    
       if (args.genre) {
-        return Book.find({
-          genres: args.genre 
-         })
-        }
-  
-
+        const books = await Book.find({})
+        console.log('All books before filtering by genre:', books)
+    
+        const filteredBooks = books.filter(byGenre)
+        console.log('Books after filtering by genre:', filteredBooks)
+    
+        return filteredBooks
+      }
+    
+      return Book.find({})
     },
     allAuthors: async(root, args) => {
       return Author.find({})
+    },
+    me: (root, args, context) => {
+      return context.currentUser
     }
   },
   Author: {
     name: (root) => root.name,
-    bookCount: async (root) => Book.countDocuments({author: root.id}) //books.filter((book) => book.author === root.name).length
+    bookCount: async (root) => Book.countDocuments({author: root.id}) 
   },
   Book: {
     title: (root) => root.title,
@@ -152,7 +145,7 @@ const resolvers = {
   },
   Mutation: {
     createUser: async (root, args) => {
-      const user = new User({ username: args.username })
+      const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre })
   
       return user.save()
         .catch(error => {
@@ -234,19 +227,6 @@ const resolvers = {
 
       author.born = args.setBornTo
       await author.save()
-     // const author = authors.find(p => p.name === args.name)
-      
-
-    /*  if (!author) {
-        return null
-      }
-      */
-     /* if (args.setBornTo) {
-        const updatedAuthor = { ...author, born: args.setBornTo }
-        authors = authors.map(p => p.name === args.name ? updatedAuthor : p)
-        return updatedAuthor
-      }
-      */
       return author
     },
     addAuthor: async (root, args) => {

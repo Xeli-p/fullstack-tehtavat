@@ -32,7 +32,7 @@ const Authors = (props) => {
     refetchQueries: [{ query: ALL_AUTHORS }]
   })
 
-
+  const token = localStorage.getItem('userToken')
 
   const submit = async (event) => {
     event.preventDefault()
@@ -76,8 +76,9 @@ const Authors = (props) => {
         </tbody>
       </table>
 
-      <h3>Set birthyear</h3>
+      {token ? (
       <div>
+      <h3>Set birthyear</h3>
         <form onSubmit={submit}>
           <div>
             name
@@ -101,7 +102,7 @@ const Authors = (props) => {
           <button type="submit">edit number</button>
         </form>
       </div>
-
+      ) : null}
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const ALL_BOOKS = gql`
   query AllBooks($genre: String) {
@@ -13,15 +13,31 @@ const ALL_BOOKS = gql`
   }
 `
 
+const ME = gql`
+  query {
+    me {
+      favoriteGenre
+    }
+  }
+`
 
-const Books = (props) => {
-
+const Recommend = (props) => {
   const [filter, setFilter] = useState('')
-  const result = useQuery(ALL_BOOKS, {
+
+  const { data: meData, loading: meLoading } = useQuery(ME)
+
+  useEffect(() => {
+    if (!meLoading && meData && meData.me) {
+      console.log(meData.me.favoriteGenre)
+      setFilter(meData.me.favoriteGenre)
+    }
+  }, [meData, meLoading])
+
+  const { loading: booksLoading, data: booksData } = useQuery(ALL_BOOKS, {
     variables: { genre: filter },
   })
 
-  if (result.loading) {
+  if (meLoading || booksLoading) {
     return <div>loading...</div>
   }
 
@@ -29,7 +45,7 @@ const Books = (props) => {
     return null
   }
 
-  const books = result.data.allBooks
+  const books = booksData.allBooks
 
   console.log(books)
 
@@ -53,13 +69,8 @@ const Books = (props) => {
           ))}
         </tbody>
       </table>
-      <button onClick={() => setFilter('refactoring')}>refactoring</button> 
-      <button onClick={() => setFilter('horror')}>horror</button> 
-      <button onClick={() => setFilter('thriller')}>thriller</button> 
-      <button onClick={() => setFilter('database')}>database</button> 
-      <button onClick={() => setFilter('')}>all genres</button> 
     </div>
   )
 }
 
-export default Books
+export default Recommend

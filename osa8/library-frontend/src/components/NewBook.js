@@ -24,7 +24,9 @@ const ALL_BOOKS = gql`
   query {
     allBooks {
       title
-      author
+      author {
+        name
+      }
       published
     }
   }
@@ -63,8 +65,7 @@ const NewBook = (props) => {
 
     console.log(`{ variables: { ${title}, ${author}, ${published}, ${genres} } }`)
 
-    const result = await createBook({ variables: { title, author, published, genres } })
-    console.log(result)
+    await createBook({ variables: { title, author, published, genres } })
 
     setTitle('')
     setPublished('')
