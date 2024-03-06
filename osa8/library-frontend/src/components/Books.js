@@ -17,9 +17,10 @@ const ALL_BOOKS = gql`
 const Books = (props) => {
 
   const [filter, setFilter] = useState('')
+
   const result = useQuery(ALL_BOOKS, {
-    variables: { genre: filter },
-  })
+    variables: { genre: filter }
+  }) 
 
   if (result.loading) {
     return <div>loading...</div>
@@ -30,6 +31,8 @@ const Books = (props) => {
   }
 
   const books = result.data.allBooks
+
+  const genres = ['refactoring', 'horror', 'thriller', 'database']
 
   console.log(books)
 
@@ -44,7 +47,7 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {books.map((a) => (
+          {books && books.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author?.name || 'Unknown Author'}</td>
@@ -53,11 +56,18 @@ const Books = (props) => {
           ))}
         </tbody>
       </table>
-      <button onClick={() => setFilter('refactoring')}>refactoring</button> 
-      <button onClick={() => setFilter('horror')}>horror</button> 
-      <button onClick={() => setFilter('thriller')}>thriller</button> 
-      <button onClick={() => setFilter('database')}>database</button> 
-      <button onClick={() => setFilter('')}>all genres</button> 
+      {genres.map(genre => (
+        <button key={genre} onClick={() => {
+          setFilter(genre);
+          result.refetch({
+            refetchQueries: [{ query: ALL_BOOKS, variables: { genre: filter } }],
+          });
+        }}>{genre}</button>
+      ))}
+       <button onClick={() => {
+        setFilter('')
+        }
+        }>all books</button>
     </div>
   )
 }
